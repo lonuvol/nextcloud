@@ -62,6 +62,7 @@ services:
     volumes:
       - nextcloud_config:/config
       - nextcloud_data:/data
+      - ./init_config.sh:/config/init_config.sh:ro
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
