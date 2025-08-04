@@ -52,49 +52,6 @@ services:
     ports:
       - "8081:80"
 
-  configurator:
-    image: lscr.io/linuxserver/nextcloud:latest
-    container_name: nextcloud_configurator
-    depends_on:
-      - app
-    user: abc
-    working_dir: /app/www/src
-    command: >
-      bash -c "
-        until occ status | grep -q 'installed: true'; do
-          echo '⌛ Esperant que Nextcloud estigui llest...';
-          sleep 5;
-        done;
-
-        echo '⚙️ Configurant Nextcloud...';
-
-        occ config:system:set memcache.local --value='\\OC\\Memcache\\Redis' --type=string;
-        occ config:system:set redis host --value=redis --type=string;
-        occ config:system:set redis port --value=6379 --type=integer;
-
-        occ config:system:set trusted_domains 0 --value=$TRUSTED_DOMAIN_0;
-        occ config:system:set trusted_domains 1 --value=$TRUSTED_DOMAIN_1;
-        occ config:system:set trusted_domains 2 --value=$TRUSTED_DOMAIN_2;
-
-        occ config:system:set onlyoffice.jwt_secret --value=$ONLYOFFICE_JWT_SECRET;
-        occ config:system:set default_phone_region --value=$DEFAULT_PHONE_REGION;
-
-        occ background:cron;
-
-        echo '✅ Configuració completada.';
-      "
-    volumes:
-      - nextcloud_config:/config
-      - nextcloud_data:/data
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TRUSTED_DOMAIN_0=${TRUSTED_DOMAIN_0}
-      - TRUSTED_DOMAIN_1=${TRUSTED_DOMAIN_1}
-      - TRUSTED_DOMAIN_2=${TRUSTED_DOMAIN_2}
-      - ONLYOFFICE_JWT_SECRET=${ONLYOFFICE_JWT_SECRET}
-      - DEFAULT_PHONE_REGION=${DEFAULT_PHONE_REGION}
-
 volumes:
   db_data:
   nextcloud_config:
