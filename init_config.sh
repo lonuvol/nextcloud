@@ -1,4 +1,16 @@
 #!/bin/bash
+set -e
+
+echo "⏳ Esperant que Nextcloud estigui instal·lat i preparat..."
+
+until sudo -u abc php /config/www/nextcloud/occ status | grep -q "installed"; do
+  echo "⌛ Nextcloud no està llest. Reintentant en 5s..."
+  sleep 5
+done
+
+echo "✅ Nextcloud està preparat. Iniciant configuració..."
+
+#!/bin/bash
 
 # Esperem que Nextcloud estigui llest
 until curl -k https://nextcloud_app/status.php &>/dev/null; do
