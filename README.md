@@ -1,45 +1,74 @@
-# Nextcloud Docker Deployment
+# 📦 Nextcloud Docker Stack
 
-This project deploys Nextcloud with:
+Aquest projecte desplega un servidor Nextcloud complet amb:
 
-- MariaDB
-- Redis (memcache)
-- OnlyOffice
-- Auto configuration (`occ`) via `init_config.sh`
-- Externalized `.env` file for secrets
+- ✅ Base de dades MariaDB
+- ✅ Redis per millora de rendiment
+- ✅ Integració amb OnlyOffice
+- ✅ Configuració automàtica de Nextcloud (memòria cau, dominis, etc.)
 
-## Usage
+## 🚀 Instruccions
+
+### 1. Clona el repositori
+
+```bash
+git clone https://github.com/el-teu-usuari/nextcloud-docker.git
+cd nextcloud-docker
+```
+
+### 2. Crea un fitxer `.env`
+
+Copia l'exemple:
 
 ```bash
 cp .env.example .env
+```
+
+Edita `.env` i omple les variables amb els teus valors (usuaris, contrasenyes, dominis, etc).
+
+### 3. Inicia els serveis
+
+```bash
 docker compose up -d
 ```
 
-The `init_config.sh` script configures Redis, OnlyOffice, trusted domains, cron, and default region/email settings automatically on first run.
+### 4. Accedeix a Nextcloud
 
-## Volumes
+Un cop completada la instal·lació, obre el navegador a:
 
-- `nextcloud_data`: User files
-- `nextcloud_config`: App config
-- `db_data`: MariaDB storage
+```
+https://<ip-del-teu-servidor>:8080
+```
 
-## Requirements
+## 📁 Volums persistents
 
-- Docker
-- Docker Compose v2+
+- `nextcloud_config`: configuració i fitxers de Nextcloud
+- `nextcloud_data`: dades d’usuaris
+- `db_data`: base de dades MariaDB
 
-## Notes
+## 🔁 Configuració automàtica
 
-- This setup assumes you access Nextcloud at: `https://nextcloud.local`
-- Update the values in `.env` accordingly.
+El contenidor `configurator` aplica automàticament:
 
+- Dominis de confiança (`trusted_domains`)
+- Configuració Redis (`memcache.local`)
+- Clau OnlyOffice (`onlyoffice.jwt_secret`)
+- Configuració regional (`default_phone_region`)
+- Habilitació de cron automàtic
 
-## Auto Configuration Container
+Aquest contenidor només s’executa una vegada i després es pot eliminar.
 
-This project includes a temporary `configurator` container that connects to the Nextcloud instance and runs:
-- `occ` commands to configure Redis, OnlyOffice, cron mode, trusted domains, etc.
-- Sets recommended values like `overwrite.cli.url`, `default_phone_region`, and mail parameters
+## 🔒 Recomanacions
 
-You can modify the `init_config.sh` file to adjust these defaults.
+- Usa un proxy invers (ex: Nginx o Traefik) per HTTPS real
+- Configura còpies de seguretat dels volums
+- Revisa els logs si alguna cosa no funciona:
 
-This container is launched automatically when you run `docker compose up`, and will only execute its configuration script once.
+```bash
+docker logs nextcloud_app
+docker logs nextcloud_configurator
+```
+
+---
+
+**Fet amb ❤️ per tu mateix amb l'ajuda de ChatGPT**
