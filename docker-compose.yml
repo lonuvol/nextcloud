@@ -58,7 +58,7 @@ services:
     container_name: nextcloud_configurator
     depends_on:
       - app
-    entrypoint: ["/bin/bash", "-c", "chmod +x /config/init_config.sh && /config/init_config.sh"]
+    entrypoint: ["/bin/bash", "/config/init_config.sh"]
     volumes:
       - nextcloud_config:/config
       - nextcloud_data:/data

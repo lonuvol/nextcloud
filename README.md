@@ -32,3 +32,14 @@ The `init_config.sh` script configures Redis, OnlyOffice, trusted domains, cron,
 
 - This setup assumes you access Nextcloud at: `https://nextcloud.local`
 - Update the values in `.env` accordingly.
+
+
+## Auto Configuration Container
+
+This project includes a temporary `configurator` container that connects to the Nextcloud instance and runs:
+- `occ` commands to configure Redis, OnlyOffice, cron mode, trusted domains, etc.
+- Sets recommended values like `overwrite.cli.url`, `default_phone_region`, and mail parameters
+
+You can modify the `init_config.sh` file to adjust these defaults.
+
+This container is launched automatically when you run `docker compose up`, and will only execute its configuration script once.
