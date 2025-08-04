@@ -23,7 +23,7 @@ services:
     container_name: nextcloud_app
     restart: always
     ports:
-      - 8080:443
+      - "8080:443"
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -41,7 +41,6 @@ services:
     depends_on:
       - db
       - redis
-      - onlyoffice
 
   onlyoffice:
     image: onlyoffice/documentserver:latest
@@ -51,34 +50,37 @@ services:
       - JWT_ENABLED=true
       - JWT_SECRET=${ONLYOFFICE_JWT_SECRET}
     ports:
-      - 8081:80
+      - "8081:80"
 
   configurator:
     image: lscr.io/linuxserver/nextcloud:latest
     container_name: nextcloud_configurator
     depends_on:
       - app
+    user: abc
+    working_dir: /app/www/src
     command: >
       bash -c "
-        until sudo -u abc php /app/www/src/occ status | grep -q installed; do
+        until occ status | grep -q 'installed: true'; do
           echo '⌛ Esperant que Nextcloud estigui llest...';
           sleep 5;
         done;
 
         echo '⚙️ Configurant Nextcloud...';
 
-        sudo -u abc php /app/www/src/occ config:system:set memcache.local --value='\OC\Memcache\Redis' --type=string;
-        sudo -u abc php /app/www/src/occ config:system:set redis host --value=redis --type=string;
-        sudo -u abc php /app/www/src/occ config:system:set redis port --value=6379 --type=integer;
+        occ config:system:set memcache.local --value='\\OC\\Memcache\\Redis' --type=string;
+        occ config:system:set redis host --value=redis --type=string;
+        occ config:system:set redis port --value=6379 --type=integer;
 
-        sudo -u abc php /app/www/src/occ config:system:set trusted_domains 0 --value=$TRUSTED_DOMAIN_0;
-        sudo -u abc php /app/www/src/occ config:system:set trusted_domains 1 --value=$TRUSTED_DOMAIN_1;
-        sudo -u abc php /app/www/src/occ config:system:set trusted_domains 2 --value=$TRUSTED_DOMAIN_2;
+        occ config:system:set trusted_domains 0 --value=$TRUSTED_DOMAIN_0;
+        occ config:system:set trusted_domains 1 --value=$TRUSTED_DOMAIN_1;
+        occ config:system:set trusted_domains 2 --value=$TRUSTED_DOMAIN_2;
 
-        sudo -u abc php /app/www/src/occ config:system:set onlyoffice.jwt_secret --value=$ONLYOFFICE_JWT_SECRET;
-        sudo -u abc php /app/www/src/occ config:system:set default_phone_region --value=$DEFAULT_PHONE_REGION;
+        occ config:system:set onlyoffice.jwt_secret --value=$ONLYOFFICE_JWT_SECRET;
+        occ config:system:set default_phone_region --value=$DEFAULT_PHONE_REGION;
 
-        sudo -u abc php /app/www/src/occ background:cron;
+        occ background:cron;
+
         echo '✅ Configuració completada.';
       "
     volumes:
@@ -92,8 +94,6 @@ services:
       - TRUSTED_DOMAIN_2=${TRUSTED_DOMAIN_2}
       - ONLYOFFICE_JWT_SECRET=${ONLYOFFICE_JWT_SECRET}
       - DEFAULT_PHONE_REGION=${DEFAULT_PHONE_REGION}
-      - MAIL_FROM_ADDRESS=${MAIL_FROM_ADDRESS}
-      - MAIL_DOMAIN=${MAIL_DOMAIN}
 
 volumes:
   db_data:
