@@ -1,13 +1,13 @@
 #!/bin/bash
 set -e
 
-if [ ! -f /var/www/html/occ ]; then
-  echo "❌ No s'ha trobat /var/www/html/occ. Sortint..."
+if [ ! -f /app/www/src/occ ]; then
+  echo "❌ No s'ha trobat /app/www/src/occ. Sortint..."
   exit 1
 fi
 
 echo "⏳ Esperant que Nextcloud estigui instal·lat i preparat..."
-until php /var/www/html/occ status | grep -q "installed"; do
+until php /app/www/src/occ status | grep -q "installed"; do
   echo "⌛ Nextcloud no està llest. Reintentant en 5s..."
   sleep 5
 done
@@ -15,7 +15,7 @@ done
 echo "✅ Nextcloud està preparat. Iniciant configuració..."
 echo "⏳ Esperant que Nextcloud estigui instal·lat i preparat..."
 
-until sudo -u abc php /var/www/html/occ status | grep -q "installed"; do
+until sudo -u abc php /app/www/src/occ status | grep -q "installed"; do
   echo "⌛ Nextcloud no està llest. Reintentant en 5s..."
   sleep 5
 done
